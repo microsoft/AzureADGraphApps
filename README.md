@@ -10,7 +10,7 @@ You need to be an administrator in your tenant with **at least Global Reader per
 ## Usage
 
 ```powershell
-.\Create-AppConsentGrantReport.ps1 -AdminUPN globalreader@contoso.onmicrosoft.com -Path .\output.xlsx
+.\Create-AppConsentGrantReportAzureAD.ps1 -AdminUPN globalreader@contoso.onmicrosoft.com -Path .\output.xlsx
 ```
 #### Parameters:
 `AdminUPN`: The user principal name of an administrator in your tenant with **at least Global Reader permissions**.
