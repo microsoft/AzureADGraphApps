@@ -1,4 +1,4 @@
-# Azure AD Graph deprecation toolkit
+# Azure AD Graph
 
 This PowerShell script lists applications in your tenant that use permissions for Azure AD Graph. [Azure AD Graph will be retired](https://techcommunity.microsoft.com/t5/azure-active-directory-identity/update-your-applications-to-use-microsoft-authentication-library/ba-p/1257363) on June 30, 2022.
 
@@ -10,13 +10,13 @@ If you have applications that use Azure AD Graph permissions and that actively c
 
 ## Prerequisites
 
-- Azure AD account with [Global Reader](https://docs.microsoft.com/azure/active-directory/roles/permissions-reference#global-reader) role or the permissions granted by that role.
+- An Azure AD account with at least [Global Reader](https://docs.microsoft.com/azure/active-directory/roles/permissions-reference#global-reader) role or the permissions granted by that role.
 - Microsoft Excel
 
 ## Usage
 
 ```powershell
-.\Create-AppConsentGrantReport.ps1 -AdminUPN globalreader@contoso.onmicrosoft.com -Path .\output.xlsx
+.\Create-AppConsentGrantReportAzureAD.ps1 -AdminUPN globalreader@contoso.onmicrosoft.com -Path .\output.xlsx
 ```
 
 ### Parameters
@@ -29,15 +29,17 @@ If you have applications that use Azure AD Graph permissions and that actively c
 
 **Q: How do I find out if I have Global Reader access?**
 
-**A:** Log in to the Azure Portal, and navigate the [Azure AD Users blade](https://portal.azure.com/#blade/Microsoft_AAD_IAM/UsersManagementMenuBlade/MsGraphUsers). Select your user and go to the Assigned Roles blade. In order to have sufficient permissions to run this script, you should have either a Global Reader or a Global Administrator role assigned to you.
+**A:** Sign in to the Azure portal and navigate the [Users pane](https://portal.azure.com/#blade/Microsoft_AAD_IAM/UsersManagementMenuBlade/MsGraphUsers) in **Azure Active Directory**. Select your user account and then **Assigned roles**.
+
+To run this script, you need either the **Global Reader** or **Global Administrator** role assigned to you.
 
 **Q: Can I use Azure AD Graph permissions to call Microsoft Graph?**
 
-**A:** No, you should use the corresponding permissions on Microsoft Graph. For more information, please refer to this [article](https://docs.microsoft.com/en-us/graph/migrate-azure-ad-graph-app-registration)
+**A:** No, use the corresponding Microsoft Graph permissions. For more information, see [Review app registration, permissions, and consent](https://docs.microsoft.com/graph/migrate-azure-ad-graph-app-registration).
 
-**Q: Does this script automatically remove my Azure AD Graph permissions in favor of MS Graph permissions?**
+**Q: Does this script automatically remove my Azure AD Graph permissions in favor of Microsoft Graph permissions?**
 
-**A:** No, this script gives you a list of applications that have Azure AD Graph permissions. You should review these applications, grant them the corresponding Microsoft Graph permissions, migrate their Azure AD Graph API calls to Microsoft Graph, and then remove these Azure AD Graph permissions. Our [Migration Guide](https://docs.microsoft.com/en-us/graph/migrate-azure-ad-graph-planning-checklist) will help you with this process.
+**A:** No, this script gives you a list of applications that have Azure AD Graph permissions. You should review these applications, grant them the corresponding Microsoft Graph permissions, migrate their Azure AD Graph API calls to Microsoft Graph, and then remove these Azure AD Graph permissions. Our [App migration planning checklist](https://docs.microsoft.com/graph/migrate-azure-ad-graph-planning-checklist) can help you with this process.
 
 ## Support
 
