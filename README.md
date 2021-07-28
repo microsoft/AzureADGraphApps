@@ -1,12 +1,17 @@
-# :construction:Azure AD Graph Deprecation Toolkit :construction:
+# Azure AD Graph deprecation toolkit
 
-This PowerShell script lists applications in your tenant that use permissions for Azure AD Graph, [which will be retired](https://techcommunity.microsoft.com/t5/azure-active-directory-identity/update-your-applications-to-use-microsoft-authentication-library/ba-p/1257363) on 30 June 2022.
+This PowerShell script lists applications in your tenant that use permissions for Azure AD Graph. [Azure AD Graph will be retired](https://techcommunity.microsoft.com/t5/azure-active-directory-identity/update-your-applications-to-use-microsoft-authentication-library/ba-p/1257363) on June 30, 2022.
 
-If you have applications that use Azure AD Graph permissions and actively call Azure AD Graph, please follow our [Migration Guide](https://docs.microsoft.com/en-us/graph/migrate-azure-ad-graph-planning-checklist) to migrate your applications using Azure AD Graph to Microsoft Graph.
+If you have applications that use Azure AD Graph permissions and that actively call Azure AD Graph, follow the steps in the [App migration planning checklist](https://docs.microsoft.com/graph/migrate-azure-ad-graph-planning-checklist) to migrate your applications using Azure AD Graph to Microsoft Graph.
+
+> :warning: **Azure AD Graph is deprecated**. To avoid loss of functionality, [migrate your applications to Microsoft Graph](https://docs.microsoft.com/graph/migrate-azure-ad-graph-planning-checklist) before June 30, 2022 when Azure AD Graph API endpoints will stop responding to requests.
+>
+> Microsoft will continue technical support and apply security fixes for Azure AD Graph until June 30, 2022 when all functionality and support will end. If you fail to migrate your applications to Microsoft Graph before June 30, 2022, you put their functionality and stability at risk.
 
 ## Prerequisites
 
-You need to be an administrator in your tenant with **at least Global Reader permissions**.
+- Azure AD account with [Global Reader](https://docs.microsoft.com/azure/active-directory/roles/permissions-reference#global-reader) role or the permissions granted by that role.
+- Microsoft Excel
 
 ## Usage
 
@@ -14,7 +19,7 @@ You need to be an administrator in your tenant with **at least Global Reader per
 .\Create-AppConsentGrantReport.ps1 -AdminUPN globalreader@contoso.onmicrosoft.com -Path .\output.xlsx
 ```
 
-#### Parameters:
+### Parameters
 
 `AdminUPN`: The user principal name of an administrator in your tenant with **at least Global Reader permissions**.
 
@@ -33,6 +38,10 @@ You need to be an administrator in your tenant with **at least Global Reader per
 **Q: Does this script automatically remove my Azure AD Graph permissions in favor of MS Graph permissions?**
 
 **A:** No, this script gives you a list of applications that have Azure AD Graph permissions. You should review these applications, grant them the corresponding Microsoft Graph permissions, migrate their Azure AD Graph API calls to Microsoft Graph, and then remove these Azure AD Graph permissions. Our [Migration Guide](https://docs.microsoft.com/en-us/graph/migrate-azure-ad-graph-planning-checklist) will help you with this process.
+
+## Support
+
+Please see [SUPPORT.md](SUPPORT.md) for support options.
 
 ## Contributing
 
