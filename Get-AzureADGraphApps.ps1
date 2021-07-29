@@ -1,6 +1,6 @@
 <# 
 .SYNOPSIS
-    Returns all the apps and service principles that rely on Azure AD Graph.
+    Returns all the apps and service principles that currently use Azure AD Graph
 
 .EXAMPLE
     PS C:\> .\Get-AzureADGraphApps.ps1
@@ -69,7 +69,7 @@ function Get-MSCloudIdConsentGrantList
     }
    
     # Get all ServicePrincipal objects and add to the cache
-    Write-Verbose "Retrieving ServicePrincipal objects..."
+    Write-Progress -Activity "Retrieving Service Principal objects. Please wait..."
     $servicePrincipals = Get-AzureADServicePrincipal -All $true 
     
     $Oauth2PermGrants = @()
@@ -81,7 +81,7 @@ function Get-MSCloudIdConsentGrantList
         $spPermGrants = Get-AzureADServicePrincipalOAuth2PermissionGrant -ObjectId $sp.ObjectId -All $true
         $Oauth2PermGrants += $spPermGrants
         $count++
-        Write-Progress -Activity "Getting Service Principal from Azure AD . . ." -Status "$count of $($servicePrincipals.Count)" -percentComplete (($count / $servicePrincipals.Count)  * 100)
+        Write-Progress -Activity "Getting Service Principal Delegate Permissions..." -Status "$count of $($servicePrincipals.Count) - $($sp.DisplayName)" -percentComplete (($count / $servicePrincipals.Count)  * 100)
 
         if($sp.AppId -eq "00000002-0000-0000-c000-000000000000") #Azure Active Directory Graph API app
         {
@@ -90,7 +90,7 @@ function Get-MSCloudIdConsentGrantList
     }  
 
     # Get all existing OAuth2 permission grants, get the client, resource and scope details
-    Write-Verbose "Processing Delegated Permission Grants..."
+    Write-Progress -Activity "Checking Delegated Permission Grants..."
     foreach ($grant in $Oauth2PermGrants)
     {
         if ($grant.ResourceId -eq $aadGraphSp.ObjectId -and $grant.Scope) 
@@ -99,7 +99,7 @@ function Get-MSCloudIdConsentGrantList
                 $scope = $_
                 $client = GetObjectByObjectId -ObjectId $grant.ClientId
 
-                Write-Progress -Activity "Processing Application - $($client.DisplayName)"
+                Write-Progress -Activity "Checking Delegate Permissions - $($client.DisplayName)"
 
                 # Determine if the object comes from the Microsoft Services tenant, and flag it if true
                 $MicrosoftRegisteredClientApp = @()
@@ -130,10 +130,10 @@ function Get-MSCloudIdConsentGrantList
     }
     
     # Iterate over all ServicePrincipal objects and get app permissions
-    Write-Verbose "Processing Application Permission Grants..."
+    Write-Progress -Activity "Getting Application Permission Grants..."
     $script:ObjectByObjectClassId['ServicePrincipal'].GetEnumerator() | ForEach-Object {
         $sp = $_.Value
-        Write-Progress -Activity "Checking Application - $($sp.DisplayName)"
+        Write-Progress -Activity "Checking Application Permissions - $($sp.DisplayName)"
 
         Get-AzureADServiceAppRoleAssignedTo -ObjectId $sp.ObjectId  -All $true `
         | Where-Object { $_.PrincipalType -eq "ServicePrincipal" -and $_.ResourceId -eq $aadGraphSp.ObjectId} | ForEach-Object {
