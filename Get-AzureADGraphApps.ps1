@@ -1,9 +1,9 @@
 <# 
 .SYNOPSIS
-    Returns all the apps and service principles that currently use Azure AD Graph
+    Returns all the apps and service principles that rely on Azure AD Graph.
 
 .EXAMPLE
-    PS C:\> .\Create-AppConsentGrantReport.ps1
+    PS C:\> .\Get-AzureADGraphApps.ps1
     Returns a collection of all the apps that have Azure AD Graph permissions assigned to them
 #>
 
