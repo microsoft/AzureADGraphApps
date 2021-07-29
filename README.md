@@ -5,14 +5,14 @@ This PowerShell script lists applications in your tenant that use permissions fo
 If you have applications that use Azure AD Graph permissions and actively call Azure AD Graph, please follow our [Migration Guide](https://docs.microsoft.com/en-us/graph/migrate-azure-ad-graph-planning-checklist) to migrate your applications using Azure AD Graph to Microsoft Graph. 
 
 ## Prerequisites
-Download and save the Get-AzureADGraphApps.ps1 file to your device.
+Download and save the [Get-AzureADGraphApps.ps1](https://github.com/microsoft/AzureADGraphApps/blob/main/Get-AzureADGraphApps.ps1) script file to your device.
 Note: This script will automatically download and install the Azure AD PowerShell module if it is not already installed.
 
 ## Usage
 This sample will create a csv of all the apps in the tenant that rely on Azure AD Graph.
 
 ```powershell
-.\Get-AzureADGraphApps.ps1 | Export-Csv .\apps-pora.csv -NoTypeInformation
+.\Get-AzureADGraphApps.ps1 | Export-Csv .\aadgraphapps.csv -NoTypeInformation
 ```
 
 ## FAQs
