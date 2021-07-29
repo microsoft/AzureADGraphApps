@@ -5,24 +5,21 @@ This PowerShell script lists applications in your tenant that use permissions fo
 If you have applications that use Azure AD Graph permissions and actively call Azure AD Graph, please follow our [Migration Guide](https://docs.microsoft.com/en-us/graph/migrate-azure-ad-graph-planning-checklist) to migrate your applications using Azure AD Graph to Microsoft Graph. 
 
 ## Prerequisites
-You need to be an administrator in your tenant with **at least Global Reader permissions**. 
+Download and save the Get-AzureADGraphApps.ps1 file to your device.
+Note: This script will automatically download and install the Azure AD PowerShell module if it is not already installed.
 
 ## Usage
+This sample will create a csv of all the apps in the tenant that rely on Azure AD Graph.
 
 ```powershell
-.\Create-AppConsentGrantReportAzureAD.ps1 -AdminUPN globalreader@contoso.onmicrosoft.com -Path .\output.xlsx
+.\Get-AzureADGraphApps.ps1 | Export-Csv .\apps-pora.csv -NoTypeInformation
 ```
-#### Parameters:
-`AdminUPN`: The user principal name of an administrator in your tenant with **at least Global Reader permissions**.
-
-`Path`: The path to output results to (in Excel format).
-
 
 ## FAQs
 
-**Q: How do I find out if I have Global Reader access?**
+**Q: What permission do I need to run this script?**
 
-**A:** Log in to the Azure Portal, and navigate the [Azure AD Users blade](https://portal.azure.com/#blade/Microsoft_AAD_IAM/UsersManagementMenuBlade/MsGraphUsers). Select your user and go to the Assigned Roles blade. In order to have sufficient permissions to run this script, you should have either a Global Reader or a Global Administrator role assigned to you.  
+**A:** This script can be run by any user in the tenant and does not require a privileged Azure AD role.
 
 **Q: Can I use Azure AD Graph permissions to call Microsoft Graph?**
 
