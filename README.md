@@ -6,10 +6,11 @@ If you have applications that use Azure AD Graph permissions and actively call A
 
 ## Prerequisites
 Download and save the [Get-AzureADGraphApps.ps1](https://github.com/microsoft/AzureADGraphApps/blob/main/Get-AzureADGraphApps.ps1) script file to your device.
-Note: This script will automatically download and install the Azure AD PowerShell module if it is not already installed.
+
+Note: This script has a dependancy on the Azure AD PowerShell module. When the script is run it will automatically install the dependant module if it is not already installed.
 
 ## Usage
-This sample will create a csv of all the apps in the tenant that rely on Azure AD Graph.
+The command below will create a csv of all the apps in the tenant that rely on the Azure AD Graph.
 
 ```powershell
 .\Get-AzureADGraphApps.ps1 | Export-Csv .\aadgraphapps.csv -NoTypeInformation
@@ -20,6 +21,10 @@ This sample will create a csv of all the apps in the tenant that rely on Azure A
 **Q: What permission do I need to run this script?**
 
 **A:** This script can be run by any user in the tenant and does not require a privileged Azure AD role.
+
+**Q: How long will the script take to complete?**
+
+**A:** The duration depends on the number of service principals in the tenant. A small tenant with less than 1000 service principals will usually complete in a few minutes. Larger tenants can take up to 1-2 hours and very large tenants that have more than 100,000 service principals can take 10-24 hours to run.
 
 **Q: Can I use Azure AD Graph permissions to call Microsoft Graph?**
 
