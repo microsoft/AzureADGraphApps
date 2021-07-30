@@ -7,9 +7,11 @@
     Returns a collection of all the apps that have Azure AD Graph permissions assigned to them
 #>
 
+[cmdletbinding()]
+param()
 
 function Load-Module ($m) {
-
+    Write-Progress -Activity "Loading dependencies..."
     # If module is imported say that and do nothing
     if (Get-Module | Where-Object {$_.Name -eq $m}) {
         Write-Verbose "Module $m is already imported."
