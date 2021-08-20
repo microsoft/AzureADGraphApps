@@ -171,6 +171,6 @@ function Get-MSCloudIdConsentGrantList
 
 Load-Module "AzureAD"
 
-Connect-AzureAD
+Connect-AzureAD | Out-Null
 
 Get-MSCloudIdConsentGrantList
