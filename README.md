@@ -7,7 +7,7 @@ If you have applications that use Azure AD Graph permissions and actively call A
 ## Prerequisites
 Download and save the [Get-AzureADGraphApps.ps1](https://github.com/microsoft/AzureADGraphApps/blob/main/Get-AzureADGraphApps.ps1) script file to your device.
 
-Note: This script has a dependancy on the Azure AD PowerShell module. When the script is run it will automatically install the dependant module if it is not already installed.
+Note:  This script has a dependency on the Azure AD PowerShell module. When the script is run it will automatically install the dependant module if it is not already installed. You will need PowerShell Desktop edition to run this script. 
 
 ## Usage
 The command below will create a csv of all the apps in the tenant that rely on the Azure AD Graph.
@@ -17,6 +17,10 @@ The command below will create a csv of all the apps in the tenant that rely on t
 ```
 
 ## FAQs
+
+**Q: I use a Mac/Azure Cloud Shell. Can I run this script?**
+
+**A:** No, but you can fetch the same list of applications (that use Azure Active Directory Graph permissions) using the [Azure portal by following these steps](https://docs.microsoft.com/en-us/graph/migrate-azure-ad-graph-faq#method-2-use-the-app-registrations-menu-of-the-azure-portal).
 
 **Q: What permission do I need to run this script?**
 
