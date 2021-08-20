@@ -1,4 +1,5 @@
-<# 
+#Requires -PSEdition Desktop
+<#
 .SYNOPSIS
     Returns all the apps and service principles that currently use Azure AD Graph
 
