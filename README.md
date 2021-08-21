@@ -30,15 +30,19 @@ The command below will create a csv of all the apps in the tenant that rely on t
 **A:** No, but you can fetch the same list of applications (that use Azure Active Directory Graph permissions) using the [Azure portal by following these steps](https://docs.microsoft.com/en-us/graph/migrate-azure-ad-graph-faq#method-2-use-the-app-registrations-menu-of-the-azure-portal).
 
 **Q: What permission do I need to run this script?**
+
 **A:** This script can be run by any user in the tenant and does not require a privileged Azure AD role.
 
 **Q: How long will the script take to complete?**
+
 **A:** The duration depends on the number of service principals in the tenant. A small tenant with less than 1000 service principals will usually complete in a few minutes. Larger tenants can take up to 1-2 hours and very large tenants that have more than 100,000 service principals can take 10-24 hours to run.
 
 **Q: Can I use Azure AD Graph permissions to call Microsoft Graph?**
+
 **A:** No, use the corresponding Microsoft Graph permissions. For more information, see [Review app registration, permissions, and consent](https://docs.microsoft.com/graph/migrate-azure-ad-graph-app-registration).
 
 **Q: Does this script automatically remove my Azure AD Graph permissions in favor of Microsoft Graph permissions?**
+
 **A:** No, this script gives you a list of applications that have Azure AD Graph permissions. You should review these applications, grant them the corresponding Microsoft Graph permissions, migrate their Azure AD Graph API calls to Microsoft Graph, and then remove these Azure AD Graph permissions. Our [App migration planning checklist](https://docs.microsoft.com/graph/migrate-azure-ad-graph-planning-checklist) can help you with this process.
 
 
