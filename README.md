@@ -25,8 +25,6 @@ The command below will create a csv of all the apps in the tenant that rely on t
 ```
 
 ## FAQs
-
-## FAQs
 =======
 **Q: I use a Mac/Azure Cloud Shell. Can I run this script?**
 
