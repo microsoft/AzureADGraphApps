@@ -1,8 +1,12 @@
-#  :construction:Azure AD Graph Deprecation Toolkit :construction:
+# Azure AD Graph
 
-This PowerShell script lists applications in your tenant that use permissions for Azure AD Graph, [which will be retired](https://techcommunity.microsoft.com/t5/azure-active-directory-identity/update-your-applications-to-use-microsoft-authentication-library/ba-p/1257363) on 30 June 2022. 
+This PowerShell script lists applications in your tenant that use permissions for Azure AD Graph. [Azure AD Graph will be retired](https://techcommunity.microsoft.com/t5/azure-active-directory-identity/update-your-applications-to-use-microsoft-authentication-library/ba-p/1257363) on June 30, 2022.
 
-If you have applications that use Azure AD Graph permissions and actively call Azure AD Graph, please follow our [Migration Guide](https://docs.microsoft.com/en-us/graph/migrate-azure-ad-graph-planning-checklist) to migrate your applications using Azure AD Graph to Microsoft Graph. 
+If you have applications that use Azure AD Graph permissions and that actively call Azure AD Graph, follow the steps in the [App migration planning checklist](https://docs.microsoft.com/graph/migrate-azure-ad-graph-planning-checklist) to migrate your applications using Azure AD Graph to Microsoft Graph.
+
+> :warning: **Azure AD Graph is deprecated**. To avoid loss of functionality, [migrate your applications to Microsoft Graph](https://docs.microsoft.com/graph/migrate-azure-ad-graph-planning-checklist) before June 30, 2022 when Azure AD Graph API endpoints will stop responding to requests.
+>
+> Microsoft will continue technical support and apply security fixes for Azure AD Graph until June 30, 2022 when all functionality and support will end. If you fail to migrate your applications to Microsoft Graph before June 30, 2022, you put their functionality and stability at risk.
 
 ## Prerequisites
 
@@ -22,6 +26,8 @@ The command below will create a csv of all the apps in the tenant that rely on t
 
 ## FAQs
 
+## FAQs
+=======
 **Q: I use a Mac/Azure Cloud Shell. Can I run this script?**
 
 **A:** No, but you can fetch the same list of applications (that use Azure Active Directory Graph permissions) using the [Azure portal by following these steps](https://docs.microsoft.com/en-us/graph/migrate-azure-ad-graph-faq#method-2-use-the-app-registrations-menu-of-the-azure-portal).
@@ -36,11 +42,15 @@ The command below will create a csv of all the apps in the tenant that rely on t
 
 **Q: Can I use Azure AD Graph permissions to call Microsoft Graph?**
 
-**A:** No, you should use the corresponding permissions on Microsoft Graph. For more information, please refer to this [article](https://docs.microsoft.com/en-us/graph/migrate-azure-ad-graph-app-registration)
+**A:** No, use the corresponding Microsoft Graph permissions. For more information, see [Review app registration, permissions, and consent](https://docs.microsoft.com/graph/migrate-azure-ad-graph-app-registration).
 
-**Q: Does this script automatically remove my Azure AD Graph permissions in favor of MS Graph permissions?**
+**Q: Does this script automatically remove my Azure AD Graph permissions in favor of Microsoft Graph permissions?**
 
-**A:** No, this script gives you a list of applications that have Azure AD Graph permissions. You should review these applications, grant them the corresponding Microsoft Graph permissions, migrate their Azure AD Graph API calls to Microsoft Graph, and then remove these Azure AD Graph permissions. Our [Migration Guide](https://docs.microsoft.com/en-us/graph/migrate-azure-ad-graph-planning-checklist) will help you with this process. 
+**A:** No, this script gives you a list of applications that have Azure AD Graph permissions. You should review these applications, grant them the corresponding Microsoft Graph permissions, migrate their Azure AD Graph API calls to Microsoft Graph, and then remove these Azure AD Graph permissions. Our [App migration planning checklist](https://docs.microsoft.com/graph/migrate-azure-ad-graph-planning-checklist) can help you with this process.
+
+## Support
+
+Please see [SUPPORT.md](SUPPORT.md) for support options.
 
 ## Contributing
 
@@ -58,8 +68,8 @@ contact [opencode@microsoft.com](mailto:opencode@microsoft.com) with any additio
 
 ## Trademarks
 
-This project may contain trademarks or logos for projects, products, or services. Authorized use of Microsoft 
-trademarks or logos is subject to and must follow 
+This project may contain trademarks or logos for projects, products, or services. Authorized use of Microsoft
+trademarks or logos is subject to and must follow
 [Microsoft's Trademark & Brand Guidelines](https://www.microsoft.com/en-us/legal/intellectualproperty/trademarks/usage/general).
 Use of Microsoft trademarks or logos in modified versions of this project must not cause confusion or imply Microsoft sponsorship.
 Any use of third-party trademarks or logos are subject to those third-party's policies.
