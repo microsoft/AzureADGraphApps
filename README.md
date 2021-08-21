@@ -10,28 +10,35 @@ If you have applications that use Azure AD Graph permissions and that actively c
 
 ## Prerequisites
 
-- An Azure AD account with at least [Global Reader](https://docs.microsoft.com/azure/active-directory/roles/permissions-reference#global-reader) role or the permissions granted by that role.
-- Microsoft Excel
+You will need PowerShell Desktop edition to run this script. If you're on a Mac or if you use Azure Cloud Shell, you can obtain the same list of applications using [the Azure portal by following these steps](https://docs.microsoft.com/en-us/graph/migrate-azure-ad-graph-faq#method-2-use-the-app-registrations-menu-of-the-azure-portal).
+
+Download and save the [Get-AzureADGraphApps.ps1](https://github.com/microsoft/AzureADGraphApps/blob/main/Get-AzureADGraphApps.ps1) script file to your device.
+
+Note:  
+This script has a dependency on the Azure AD PowerShell module. When the script is run it will automatically install the dependant module if it is not already installed.
 
 ## Usage
+The command below will create a csv of all the apps in the tenant that rely on the Azure AD Graph.
 
 ```powershell
-.\Create-AppConsentGrantReportAzureAD.ps1 -AdminUPN globalreader@contoso.onmicrosoft.com -Path .\output.xlsx
+.\Get-AzureADGraphApps.ps1 | Export-Csv .\aadgraphapps.csv -NoTypeInformation
 ```
-
-### Parameters
-
-`AdminUPN`: The user principal name of an administrator in your tenant with **at least Global Reader permissions**.
-
-`Path`: The path to output results to (in Excel format).
 
 ## FAQs
 
-**Q: How do I find out if I have Global Reader access?**
+## FAQs
+=======
+**Q: I use a Mac/Azure Cloud Shell. Can I run this script?**
 
-**A:** Sign in to the Azure portal and navigate the [Users pane](https://portal.azure.com/#blade/Microsoft_AAD_IAM/UsersManagementMenuBlade/MsGraphUsers) in **Azure Active Directory**. Select your user account and then **Assigned roles**.
+**A:** No, but you can fetch the same list of applications (that use Azure Active Directory Graph permissions) using the [Azure portal by following these steps](https://docs.microsoft.com/en-us/graph/migrate-azure-ad-graph-faq#method-2-use-the-app-registrations-menu-of-the-azure-portal).
 
-To run this script, you need either the **Global Reader** or **Global Administrator** role assigned to you.
+**Q: What permission do I need to run this script?**
+
+**A:** This script can be run by any user in the tenant and does not require a privileged Azure AD role.
+
+**Q: How long will the script take to complete?**
+
+**A:** The duration depends on the number of service principals in the tenant. A small tenant with less than 1000 service principals will usually complete in a few minutes. Larger tenants can take up to 1-2 hours and very large tenants that have more than 100,000 service principals can take 10-24 hours to run.
 
 **Q: Can I use Azure AD Graph permissions to call Microsoft Graph?**
 
