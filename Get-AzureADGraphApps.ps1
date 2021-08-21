@@ -101,6 +101,7 @@ function Get-MSCloudIdConsentGrantList
             $grant.Scope.Split(" ") | Where-Object { $_ } | ForEach-Object {
                 $scope = $_
                 $client = GetObjectByObjectId -ObjectId $grant.ClientId
+                $ownerUPN = (Get-AzureADServicePrincipalOwner -ObjectId $client.ObjectId -Top 1).UserPrincipalName
 
                 Write-Progress -Activity "Checking Delegate Permissions - $($client.DisplayName)"
 
@@ -127,6 +128,7 @@ function Get-MSCloudIdConsentGrantList
                         "Resource" = $resource.DisplayName
                         "Permission" = $scope
                         "MicrosoftApp" = $MicrosoftRegisteredClientApp
+                        "Owner" = $ownerUPN
                     })
             }
         }
@@ -144,6 +146,7 @@ function Get-MSCloudIdConsentGrantList
             
             $client = GetObjectByObjectId -ObjectId $assignment.PrincipalId
             
+            $ownerUPN = (Get-AzureADServicePrincipalOwner -ObjectId $client.ObjectId -Top 1).UserPrincipalName
             # Determine if the object comes from the Microsoft Services tenant, and flag it if true
             $MicrosoftRegisteredClientApp = @()
             if ($client.AppOwnerTenantId -eq "f8cdef31-a31e-4b4a-93e4-5f571e91255a" -or $client.AppOwnerTenantId -eq "72f988bf-86f1-41af-91ab-2d7cd011db47") {
@@ -163,6 +166,7 @@ function Get-MSCloudIdConsentGrantList
                     "Resource" = $resource.DisplayName
                     "Permission" = $appRole.Value
                     "MicrosoftApp" = $MicrosoftRegisteredClientApp
+                    "Owner" = $ownerUPN
 
                 })
             }
