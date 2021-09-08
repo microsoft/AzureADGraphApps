@@ -14,19 +14,19 @@ param()
 function Load-Module ($m) {
     Write-Progress -Activity "Loading dependencies..."
     # If module is imported say that and do nothing
-    if (Get-Module | Where-Object {$_.Name -eq $m}) {
+    if (Get-Module | Where-Object { $_.Name -eq $m }) {
         Write-Verbose "Module $m is already imported."
     }
     else {
 
         # If module is not imported, but available on disk then import
-        if (Get-Module -ListAvailable | Where-Object {$_.Name -eq $m}) {
+        if (Get-Module -ListAvailable | Where-Object { $_.Name -eq $m }) {
             Import-Module $m
         }
         else {
 
             # If module is not imported, not available on disk, but is in online gallery then install and import
-            if (Find-Module -Name $m | Where-Object {$_.Name -eq $m}) {
+            if (Find-Module -Name $m | Where-Object { $_.Name -eq $m }) {
                 Install-Module -Name $m -Force -Scope CurrentUser
                 Import-Module $m
             }
@@ -40,8 +40,7 @@ function Load-Module ($m) {
     }
 }
 
-function Get-MSCloudIdConsentGrantList
-{
+function Get-MSCloudIdConsentGrantList {
     # An in-memory cache of objects by {object ID} andy by {object class, object ID} 
     $script:ObjectByObjectId = @{}
     $script:ObjectByObjectClassId = @{}
@@ -64,7 +63,8 @@ function Get-MSCloudIdConsentGrantList
             try {
                 $object = Get-AzureADObjectByObjectId -ObjectId $ObjectId
                 CacheObject -Object $object
-            } catch { 
+            }
+            catch { 
                 Write-Verbose "Object not found."
             }
         }
@@ -74,62 +74,75 @@ function Get-MSCloudIdConsentGrantList
     # Get all ServicePrincipal objects and add to the cache
     Write-Progress -Activity "Retrieving Service Principal objects. Please wait..."
     $servicePrincipals = Get-AzureADServicePrincipal -All $true 
-    
+    $tenantId = (Get-AzureADTenantDetail).ObjectId
+
     $Oauth2PermGrants = @()
 
     $count = 0
-    foreach ($sp in $servicePrincipals)
-    {
+    foreach ($sp in $servicePrincipals) {
         CacheObject -Object $sp
         $spPermGrants = Get-AzureADServicePrincipalOAuth2PermissionGrant -ObjectId $sp.ObjectId -All $true
         $Oauth2PermGrants += $spPermGrants
         $count++
-        Write-Progress -Activity "Getting Service Principal Delegate Permissions..." -Status "$count of $($servicePrincipals.Count) - $($sp.DisplayName)" -percentComplete (($count / $servicePrincipals.Count)  * 100)
+        Write-Progress -Activity "Getting Service Principal Delegate Permissions..." -Status "$count of $($servicePrincipals.Count) - $($sp.DisplayName)" -percentComplete (($count / $servicePrincipals.Count) * 100)
 
-        if($sp.AppId -eq "00000002-0000-0000-c000-000000000000") #Azure Active Directory Graph API app
-        {
+        if ($sp.AppId -eq "00000002-0000-0000-c000-000000000000") {
+            #Azure Active Directory Graph API app
             $aadGraphSp = $sp
         }
     }  
 
     # Get all existing OAuth2 permission grants, get the client, resource and scope details
     Write-Progress -Activity "Checking Delegated Permission Grants..."
-    foreach ($grant in $Oauth2PermGrants)
-    {
-        if ($grant.ResourceId -eq $aadGraphSp.ObjectId -and $grant.Scope) 
-        {
+    foreach ($grant in $Oauth2PermGrants) {
+        if ($grant.ResourceId -eq $aadGraphSp.ObjectId -and $grant.Scope) {
             $grant.Scope.Split(" ") | Where-Object { $_ } | ForEach-Object {
                 $scope = $_
                 $client = GetObjectByObjectId -ObjectId $grant.ClientId
-                $ownerUPN = (Get-AzureADServicePrincipalOwner -ObjectId $client.ObjectId -Top 1).UserPrincipalName
 
-                Write-Progress -Activity "Checking Delegate Permissions - $($client.DisplayName)"
-
-                # Determine if the object comes from the Microsoft Services tenant, and flag it if true
-                $MicrosoftRegisteredClientApp = @()
-                if ($client.AppOwnerTenantId -eq "f8cdef31-a31e-4b4a-93e4-5f571e91255a" -or $client.AppOwnerTenantId -eq "72f988bf-86f1-41af-91ab-2d7cd011db47") {
-                    $MicrosoftRegisteredClientApp = $true
-                } else {
-                    $MicrosoftRegisteredClientApp = $false
+                $isAppProxyApp = $false
+                if ($client.Tags -contains "WindowsAzureActiveDirectoryOnPremApp") {
+                    $isAppProxyApp = $true
                 }
+                if(-not $isAppProxyApp)
+                {
+                    $ownerUPN = (Get-AzureADServicePrincipalOwner -ObjectId $client.ObjectId -Top 1).UserPrincipalName
+                    Write-Progress -Activity "Checking Delegate Permissions - $($client.DisplayName)"
+    
+                    # Determine if the object comes from the Microsoft Services tenant, and flag it if true
+                    $MicrosoftRegisteredClientApp = @()
+                    if ($client.AppOwnerTenantId -eq "f8cdef31-a31e-4b4a-93e4-5f571e91255a" -or $client.AppOwnerTenantId -eq "72f988bf-86f1-41af-91ab-2d7cd011db47") {
+                        $MicrosoftRegisteredClientApp = $true
+                    }
+                    else {
+                        $MicrosoftRegisteredClientApp = $false
+                    }
+            
+                    $isTenantOwnedApp = $false
+                    if ($client.AppOwnerTenantId -eq $tenantId) {
+                        $isTenantOwnedApp = $true
+                    }
 
-                $resource = GetObjectByObjectId -ObjectId $grant.ResourceId
+                    $resource = GetObjectByObjectId -ObjectId $grant.ResourceId
 
-                if ($grant.ConsentType -eq "AllPrincipals") {
-                    $simplifiedgranttype = "Delegated-AllPrincipals"
-                } elseif ($grant.ConsentType -eq "Principal") {
-                    $simplifiedgranttype = "Delegated-Principal"
-                }
+                    if ($grant.ConsentType -eq "AllPrincipals") {
+                        $simplifiedgranttype = "Delegated-AllPrincipals"
+                    }
+                    elseif ($grant.ConsentType -eq "Principal") {
+                        $simplifiedgranttype = "Delegated-Principal"
+                    }
                     New-Object PSObject -Property ([ordered]@{
-                        "ObjectId" = $grant.ClientId
-                        "DisplayName" = $client.DisplayName
-                        "ApplicationId" = $client.AppId
+                        "ObjectId"       = $grant.ClientId
+                        "DisplayName"    = $client.DisplayName
+                        "ApplicationId"  = $client.AppId
                         "PermissionType" = $simplifiedgranttype
-                        "Resource" = $resource.DisplayName
-                        "Permission" = $scope
-                        "MicrosoftApp" = $MicrosoftRegisteredClientApp
-                        "Owner" = $ownerUPN
+                        "Resource"       = $resource.DisplayName
+                        "Permission"     = $scope
+                        "MicrosoftApp"   = $MicrosoftRegisteredClientApp
+                        "Owner"          = $ownerUPN
+                        "TenantOwned"    = $isTenantOwnedApp
                     })
+                }
             }
         }
     }
@@ -141,37 +154,49 @@ function Get-MSCloudIdConsentGrantList
         Write-Progress -Activity "Checking Application Permissions - $($sp.DisplayName)"
 
         Get-AzureADServiceAppRoleAssignedTo -ObjectId $sp.ObjectId  -All $true `
-        | Where-Object { $_.PrincipalType -eq "ServicePrincipal" -and $_.ResourceId -eq $aadGraphSp.ObjectId} | ForEach-Object {
+        | Where-Object { $_.PrincipalType -eq "ServicePrincipal" -and $_.ResourceId -eq $aadGraphSp.ObjectId } | ForEach-Object {
             $assignment = $_
             
             $client = GetObjectByObjectId -ObjectId $assignment.PrincipalId
             
-            $ownerUPN = (Get-AzureADServicePrincipalOwner -ObjectId $client.ObjectId -Top 1).UserPrincipalName
-            # Determine if the object comes from the Microsoft Services tenant, and flag it if true
-            $MicrosoftRegisteredClientApp = @()
-            if ($client.AppOwnerTenantId -eq "f8cdef31-a31e-4b4a-93e4-5f571e91255a" -or $client.AppOwnerTenantId -eq "72f988bf-86f1-41af-91ab-2d7cd011db47") {
-                $MicrosoftRegisteredClientApp = $true
-            } else {
-                $MicrosoftRegisteredClientApp = $false
+            $isAppProxyApp = $false
+            if ($client.Tags -contains "WindowsAzureActiveDirectoryOnPremApp") {
+                $isAppProxyApp = $true
             }
+            if(-not $isAppProxyApp)
+            {
+                $ownerUPN = (Get-AzureADServicePrincipalOwner -ObjectId $client.ObjectId -Top 1).UserPrincipalName
+                # Determine if the object comes from the Microsoft Services tenant, and flag it if true
+                $MicrosoftRegisteredClientApp = @()
+                if ($client.AppOwnerTenantId -eq "f8cdef31-a31e-4b4a-93e4-5f571e91255a" -or $client.AppOwnerTenantId -eq "72f988bf-86f1-41af-91ab-2d7cd011db47") {
+                    $MicrosoftRegisteredClientApp = $true
+                }
+                else {
+                    $MicrosoftRegisteredClientApp = $false
+                }
 
-            $resource = GetObjectByObjectId -ObjectId $assignment.ResourceId            
-            $appRole = $resource.AppRoles | Where-Object { $_.Id -eq $assignment.Id }
+                $isTenantOwnedApp = $false
+                if ($client.AppOwnerTenantId -eq $tenantId) {
+                    $isTenantOwnedApp = $true
+                }
+                $resource = GetObjectByObjectId -ObjectId $assignment.ResourceId            
+                $appRole = $resource.AppRoles | Where-Object { $_.Id -eq $assignment.Id }
 
                 New-Object PSObject -Property ([ordered]@{
-                    "ObjectId" = $assignment.PrincipalId
-                    "DisplayName" = $client.DisplayName
-                    "ApplicationId" = $client.AppId
-                    "PermissionType" = "Application"
-                    "Resource" = $resource.DisplayName
-                    "Permission" = $appRole.Value
-                    "MicrosoftApp" = $MicrosoftRegisteredClientApp
-                    "Owner" = $ownerUPN
-
-                })
+                        "ObjectId"       = $assignment.PrincipalId
+                        "DisplayName"    = $client.DisplayName
+                        "ApplicationId"  = $client.AppId
+                        "PermissionType" = "Application"
+                        "Resource"       = $resource.DisplayName
+                        "Permission"     = $appRole.Value
+                        "MicrosoftApp"   = $MicrosoftRegisteredClientApp
+                        "Owner"          = $ownerUPN
+                        "TenantOwned"    = $isTenantOwnedApp
+                    })
             }
         }
     }
+}
 
 Load-Module "AzureAD"
 
