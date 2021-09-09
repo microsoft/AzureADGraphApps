@@ -118,30 +118,31 @@ function Get-MSCloudIdConsentGrantList {
                         $MicrosoftRegisteredClientApp = $false
                     }
             
-                    $isTenantOwnedApp = $false
-                    if ($client.AppOwnerTenantId -eq $tenantId) {
-                        $isTenantOwnedApp = $true
-                    }
+                    if(-not $MicrosoftRegisteredClientApp) {
+                        $isTenantOwnedApp = $false
+                        if ($client.AppOwnerTenantId -eq $tenantId) {
+                            $isTenantOwnedApp = $true
+                        }
 
-                    $resource = GetObjectByObjectId -ObjectId $grant.ResourceId
+                        $resource = GetObjectByObjectId -ObjectId $grant.ResourceId
 
-                    if ($grant.ConsentType -eq "AllPrincipals") {
-                        $simplifiedgranttype = "Delegated-AllPrincipals"
+                        if ($grant.ConsentType -eq "AllPrincipals") {
+                            $simplifiedgranttype = "Delegated-AllPrincipals"
+                        }
+                        elseif ($grant.ConsentType -eq "Principal") {
+                            $simplifiedgranttype = "Delegated-Principal"
+                        }
+                        New-Object PSObject -Property ([ordered]@{
+                            "ObjectId"       = $grant.ClientId
+                            "DisplayName"    = $client.DisplayName
+                            "ApplicationId"  = $client.AppId
+                            "PermissionType" = $simplifiedgranttype
+                            "Resource"       = $resource.DisplayName
+                            "Permission"     = $scope
+                            "Owner"          = $ownerUPN
+                            "TenantOwned"    = $isTenantOwnedApp
+                        })
                     }
-                    elseif ($grant.ConsentType -eq "Principal") {
-                        $simplifiedgranttype = "Delegated-Principal"
-                    }
-                    New-Object PSObject -Property ([ordered]@{
-                        "ObjectId"       = $grant.ClientId
-                        "DisplayName"    = $client.DisplayName
-                        "ApplicationId"  = $client.AppId
-                        "PermissionType" = $simplifiedgranttype
-                        "Resource"       = $resource.DisplayName
-                        "Permission"     = $scope
-                        "MicrosoftApp"   = $MicrosoftRegisteredClientApp
-                        "Owner"          = $ownerUPN
-                        "TenantOwned"    = $isTenantOwnedApp
-                    })
                 }
             }
         }
@@ -175,24 +176,25 @@ function Get-MSCloudIdConsentGrantList {
                     $MicrosoftRegisteredClientApp = $false
                 }
 
-                $isTenantOwnedApp = $false
-                if ($client.AppOwnerTenantId -eq $tenantId) {
-                    $isTenantOwnedApp = $true
-                }
-                $resource = GetObjectByObjectId -ObjectId $assignment.ResourceId            
-                $appRole = $resource.AppRoles | Where-Object { $_.Id -eq $assignment.Id }
+                if(-not $MicrosoftRegisteredClientApp) {
+                    $isTenantOwnedApp = $false
+                    if ($client.AppOwnerTenantId -eq $tenantId) {
+                        $isTenantOwnedApp = $true
+                    }
+                    $resource = GetObjectByObjectId -ObjectId $assignment.ResourceId            
+                    $appRole = $resource.AppRoles | Where-Object { $_.Id -eq $assignment.Id }
 
-                New-Object PSObject -Property ([ordered]@{
+                    New-Object PSObject -Property ([ordered]@{
                         "ObjectId"       = $assignment.PrincipalId
                         "DisplayName"    = $client.DisplayName
                         "ApplicationId"  = $client.AppId
                         "PermissionType" = "Application"
                         "Resource"       = $resource.DisplayName
                         "Permission"     = $appRole.Value
-                        "MicrosoftApp"   = $MicrosoftRegisteredClientApp
                         "Owner"          = $ownerUPN
                         "TenantOwned"    = $isTenantOwnedApp
                     })
+                }
             }
         }
     }
