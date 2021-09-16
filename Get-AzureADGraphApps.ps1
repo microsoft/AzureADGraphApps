@@ -132,6 +132,7 @@ function Get-MSCloudIdConsentGrantList {
                         elseif ($grant.ConsentType -eq "Principal") {
                             $simplifiedgranttype = "Delegated-Principal"
                         }
+                        $global:hasData = $true
                         New-Object PSObject -Property ([ordered]@{
                             "ObjectId"       = $grant.ClientId
                             "DisplayName"    = $client.DisplayName
@@ -183,7 +184,8 @@ function Get-MSCloudIdConsentGrantList {
                     }
                     $resource = GetObjectByObjectId -ObjectId $assignment.ResourceId            
                     $appRole = $resource.AppRoles | Where-Object { $_.Id -eq $assignment.Id }
-
+                    
+                    $global:hasData = $true
                     New-Object PSObject -Property ([ordered]@{
                         "ObjectId"       = $assignment.PrincipalId
                         "DisplayName"    = $client.DisplayName
@@ -201,7 +203,8 @@ function Get-MSCloudIdConsentGrantList {
 }
 
 Load-Module "AzureAD"
-
-Connect-AzureAD | Out-Null
-
+$global:hasData = $false
 Get-MSCloudIdConsentGrantList
+if($global:hasData -eq $false){
+    Write-Warning "This tenant does not have any apps using Azure AD Graph"
+}
