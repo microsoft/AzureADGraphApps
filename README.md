@@ -21,6 +21,7 @@ This script has a dependency on the Azure AD PowerShell module. When the script 
 The command below will create a csv of all the apps in the tenant that rely on the Azure AD Graph.
 
 ```powershell
+Connect-AzureAD
 .\Get-AzureADGraphApps.ps1 | Export-Csv .\aadgraphapps.csv -NoTypeInformation
 ```
 
