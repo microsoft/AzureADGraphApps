@@ -1,16 +1,20 @@
 # Azure AD Graph
 
-This PowerShell script lists applications in your tenant that use permissions for Azure AD Graph. [Azure AD Graph will be retired](https://techcommunity.microsoft.com/t5/azure-active-directory-identity/update-your-applications-to-use-microsoft-authentication-library/ba-p/1257363) on June 30, 2022.
+This PowerShell script lists applications in your tenant that use permissions for Azure AD Graph. [Azure AD Graph will be retired soon](https://techcommunity.microsoft.com/t5/azure-active-directory-identity/update-your-applications-to-use-microsoft-authentication-library/ba-p/1257363).
 
 If you have applications that use Azure AD Graph permissions and that actively call Azure AD Graph, follow the steps in the [App migration planning checklist](https://docs.microsoft.com/graph/migrate-azure-ad-graph-planning-checklist) to migrate your applications using Azure AD Graph to Microsoft Graph.
 
-> :warning: **Azure AD Graph is deprecated**. To avoid loss of functionality, [migrate your applications to Microsoft Graph](https://docs.microsoft.com/graph/migrate-azure-ad-graph-planning-checklist) before June 30, 2022 when Azure AD Graph API endpoints will stop responding to requests.
+> :warning: **Azure AD Graph is deprecated**. To avoid loss of functionality, [migrate your applications to Microsoft Graph](https://docs.microsoft.com/graph/migrate-azure-ad-graph-planning-checklist) as soon as possible.
 >
-> Microsoft will continue technical support and apply security fixes for Azure AD Graph until June 30, 2022 when all functionality and support will end. If you fail to migrate your applications to Microsoft Graph before June 30, 2022, you put their functionality and stability at risk.
 
 ## Prerequisites
 
 You will need PowerShell Desktop edition to run this script. If you're on a Mac or if you use Azure Cloud Shell, you can obtain the same list of applications using [the Azure portal by following these steps](https://docs.microsoft.com/en-us/graph/migrate-azure-ad-graph-faq#method-2-use-the-app-registrations-menu-of-the-azure-portal).
+
+> :warning: This script does not capture all instances of Azure AD Graph usage. If you have applications that have been granted permissions or app role assignments using the methods listed below they will not be included in the generated report. 
+> * App has not been granted delegated permissions for Azure AD Graph, but calls Azure AD Graph (e.g. relying on delegated permissions granted for Microsoft Graph for authorization).
+> * App has not been granted app role assignments for Azure AD Graph, but calls Azure AD Graph (e.g. relying on directory role assignments and/or ownership for direct authorization).
+> * App has been granted delegated permissions for Azure AD Graph but has already migrated to Microsoft Graph (e.g. relying on delegated permissions granted previously for Azure AD Graph, which are considered granted for Microsoft Graph as well).
 
 Download and save the [Get-AzureADGraphApps.ps1](https://github.com/microsoft/AzureADGraphApps/blob/main/Get-AzureADGraphApps.ps1) script file to your device.
 
@@ -24,6 +28,8 @@ The command below will create a csv of all the apps in the tenant that rely on t
 Connect-AzureAD
 .\Get-AzureADGraphApps.ps1 | Export-Csv .\aadgraphapps.csv -NoTypeInformation
 ```
+
+
 
 ## FAQs
 **Q: I use a Mac/Azure Cloud Shell. Can I run this script?**
